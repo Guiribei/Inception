@@ -1,15 +1,18 @@
 FROM alpine:3.17
 
+ARG DATABASE_USER
+ARG DATABASE_USER_PASSWORD
+ARG DATABASE_NAME
+ARG DATABASE_ROOT_PASSWORD
+
 RUN apk update && apk add --no-cache mariadb mariadb-client
 
-RUN install -d -m 777 /run/mysqld && \
-    mysql_install_db --user=root && \
-    mysqld --skip-networking --user=root & \
-    sleep 10 && \
-    mysqladmin -u root password $MYSQL_ROOT_PASSWORD && \
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE $MYSQL_DATABASE;" && \
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
+COPY ./conf/my.cnf /etc/mysql/my.cnf
+
+COPY ./tools/mariadb.sh /usr/local/bin
+
+RUN chmod +x /usr/local/bin/mariadb.sh && ash -f /usr/local/bin/mariadb.sh
 
 EXPOSE 3306
 
-CMD ["mysqld"]
+CMD ["mariadb-safe"]
