@@ -7,6 +7,7 @@ clean:
 
 fclean: clean
 	docker system prune --all --volumes --force
+	docker network rm $(docker network ls --filter type=custom -q)
 	sudo rm -rf /home/guribeir/data
 
 re: fclean all
