@@ -4,6 +4,7 @@ services:
     container_name: nginx
     build:
       context: ./requirements/nginx
+    image: nginx
     ports:
     - "443:443"
     volumes:
@@ -16,7 +17,7 @@ services:
 
   mariadb:
     container_name: mariadb
-    build: 
+    build:
       context: ./requirements/mariadb
       args:
         - DATABASE_USER
@@ -24,6 +25,7 @@ services:
         - DATABASE_NAME
         - DATABASE_ROOT_PASSWORD
         - DATABASE_ROOT
+    image: mariadb
     volumes:
       - db_data:/var/lib/mysql
     restart: always
@@ -50,6 +52,7 @@ services:
         - WP_URL
         - WP_DB_HOST
         - WP_TITLE
+    image: wordpress
     volumes:
       - wp_data:/var/www/wordpress
     restart: always
