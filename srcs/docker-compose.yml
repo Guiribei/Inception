@@ -1,39 +1,79 @@
-version: '3'
-
+# version: '3'
 services:
 
   nginx:
-    image: nginx
     container_name: nginx
-    build: ./requirements/nginx
+    build:
+      context: ./requirements/nginx
     ports:
-    - "80:80"
+    - "443:443"
     volumes:
-      - data:/var/www/html
+      - wp_data:/var/www/wordpress
+    restart: always
+    depends_on:
+      - wordpress
+    networks:
+      - mynetwork
 
   mariadb:
-    image: mariadb
     container_name: mariadb
-    build: ./requirements/mariadb
-    args:
-      - DATABASE_USER
-      - DATABASE_USER_PASSWORD
-      - DATABASE_NAME
-      - DATABASE_ROOT_PASSWORD
+    build: 
+      context: ./requirements/mariadb
+      args:
+        - DATABASE_USER
+        - DATABASE_USER_PASSWORD
+        - DATABASE_NAME
+        - DATABASE_ROOT_PASSWORD
+        - DATABASE_ROOT
     volumes:
-      - data:/var/lib/mysql
+      - db_data:/var/lib/mysql
     restart: always
+    networks:
+      - mynetwork
 
   wordpress:
-    image: wordpress
     container_name: wordpress
-    build: ./requirements/wordpress
+    env_file:
+      - .env
+    build:
+      context: ./requirements/wordpress
+      args:
+        - DATABASE_USER
+        - DATABASE_USER_PASSWORD
+        - DATABASE_NAME
+        - DATABASE_ROOT_PASSWORD
+        - WP_ADMIN_USER
+        - WP_ADMIN_PASSWD
+        - WP_ADMIN_EMAIL
+        - WP_USER
+        - WP_USER_PASSWD
+        - WP_USER_EMAIL
+        - WP_URL
+        - WP_DB_HOST
+        - WP_TITLE
     volumes:
-      - data:/var/www/html
-    environment:
-      WORDPRESS_DB_HOST: mariadb:3306
-      WORDPRESS_DB_USER: ${DATABASE_USER}
-      WORDPRESS_DB_PASSWORD: ${DATABASE_PASSWORD}
+      - wp_data:/var/www/wordpress
+    restart: always
+    depends_on:
+      - mariadb
+    networks:
+      - mynetwork
 
 volumes:
-  data:
+  db_data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/guribeir/data/db_data/
+  wp_data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/guribeir/data/wp_data/
+
+networks:
+  mynetwork:
+    driver: bridge
+    name: mynetwork

@@ -1,11 +1,13 @@
-#https://medium.com/@macdonaldchika/how-to-install-tls-ssl-on-docker-nginx-container-with-lets-encrypt-5bd3bad1fd48
-
 FROM alpine:3.17
 
-RUN apk update && apk add --no-cache nginx
+RUN apk update && apk add --no-cache nginx openssl
+
+RUN openssl req -batch -x509 -sha256 -nodes -newkey rsa:2048 -days 365 \
+	-keyout /etc/ssl/private/localhost.key \
+	-out /etc/ssl/certs/localhost.crt
 
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
-ENTRYPOINT ["nginx"]
+EXPOSE 443
 
-CMD ["-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
