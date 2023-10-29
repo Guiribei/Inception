@@ -17,9 +17,8 @@ The Nginx container serves as the web server and is exposed on port 443 using a 
 ## Project Structure
 
 ```
-.
+srcs
 ├── docker-compose.yml
-├── Makefile
 └── requirements
     ├── mariadb
     │   ├── Dockerfile
