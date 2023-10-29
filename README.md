@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-    <img src="https://github.com/riceset/riceset/blob/main/42_badges/inceptione.png" />
+    <img src="https://github.com/guiribei/guiribei/blob/main/42_badges/inceptione.png" />
 </p>
 
 ## Summary
